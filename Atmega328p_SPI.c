@@ -1,8 +1,34 @@
-// NEED HEADER
+/*
+ **************************************************************
+ * Atmega328p_SPI.c
+ * Author: Tom
+ * Date: 16/11/2023
+ * This is a generic SPI library for the Atmega328p MCU. 
+ **************************************************************
+ * EXTERNAL FUNCTIONS
+ **************************************************************
+ * A328p_set_SS() - Set the SS pin high or low.
+ * A328p_SPI_init() - Init the Atmega328p for SPI comms.
+ * A328p_SPI_transfer_data_to_reg() - Transmit some data to a 
+ * register on the peripheral device.
+ * A328p_SPI_transfer_data_only() - Transmit only data.
+ * A328p_SPI_receive_from_reg() - Receive data from a register
+ * on the peripheral slave device.
+ * A328p_SPI_send_reg_only() - Send only the register to the
+ * slave device (used for multi byte read/write).
+ * A328p_SPI_receive_data_only() - Receive data from the slave
+ * device (used for multi byte read).
+ **************************************************************
+*/
+
 #include <avr/io.h>
 #include "Atmega328p_SPI.h"
 
-// Need function comment
+/*
+ * A328p_set_SS()
+ * ---------------
+ * Set the SS pin high or low.
+*/
 void A328p_set_SS(uint8_t value) {
 	switch(value) {
 		case 0:
@@ -14,7 +40,11 @@ void A328p_set_SS(uint8_t value) {
 	}
 }
 
-// Need function comment
+/*
+ * A328p_SPI_init()
+ * -----------------
+ * Initialise the Atmega328p for SPI communication.
+*/
 void A328p_SPI_init() {
 	DDRB |= (1 << SS) | (1 << MOSI) | (1 << SCK);
 	DDRB &= ~(1 << MISO);
@@ -33,7 +63,11 @@ void A328p_SPI_init() {
 	SS_HIGH;
 }
 
-// Need function comment
+/*
+ * A328p_SPI_transfer_data_to_reg()
+ * --------------------------------
+ * Transmit some data to a register on the peripheral device.
+*/
 void A328p_SPI_transfer_data_to_reg(uint8_t reg, uint8_t data) {
 	SS_LOW;
 	
@@ -49,7 +83,11 @@ void A328p_SPI_transfer_data_to_reg(uint8_t reg, uint8_t data) {
 	SS_HIGH;
 }
 
-// Need function comment
+/*
+ * A328p_SPI_transfer_data_only()
+ * ------------------------------
+ * Transmit only data to a peripheral device.
+*/
 void A328p_SPI_transfer_data_only(uint8_t data) {
 	SS_LOW;
 	// Send the data
@@ -59,7 +97,11 @@ void A328p_SPI_transfer_data_only(uint8_t data) {
 	SS_HIGH;
 }
 
-// Need function comment
+/*
+ * A328p_SPI_receive_from_reg()
+ * -----------------------------
+ * Receive data from a register in a peripheral device.
+*/
 uint8_t A328p_SPI_receive_from_reg(uint8_t reg) {
 	uint8_t data;
 	
@@ -83,14 +125,22 @@ uint8_t A328p_SPI_receive_from_reg(uint8_t reg) {
 	return data;
 }
 
-// Need function comment
+/*
+ * A328p_SPI_send_reg_only()
+ * --------------------------
+ * Send the register address to a peripheral device.
+*/
 void A328p_SPI_send_reg_only(uint8_t reg) {
 	SPDR = reg;
 	// Wait for transmission complete
 	while (!(SPSR & (1 << SPIF)));
 }
 
-// Need function comment
+/*
+ * A328p_SPI_receive_data_only()
+ * ------------------------------
+ * Receive only the data from the slave by sending a dummy byte.
+*/
 uint8_t A328p_SPI_receive_data_only() {
 	uint8_t data;
 	SPDR = 0x00;
